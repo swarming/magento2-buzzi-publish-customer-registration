@@ -31,29 +31,29 @@ class RegisterSuccess implements \Magento\Framework\Event\ObserverInterface
     private $storeResolver;
 
     /**
-     * @var \Buzzi\Publish\Helper\Customer
+     * @var \Buzzi\Publish\Helper\ExceptsMarketing
      */
-    private $customerHelper;
+    private $exceptsMarketingHelper;
 
     /**
      * @param \Buzzi\Publish\Model\Config\Events $configEvents
      * @param \Buzzi\Publish\Api\QueueInterface $queue
      * @param \Buzzi\PublishCustomerRegistration\Model\DataBuilder $dataBuilder
      * @param \Magento\Store\Api\StoreResolverInterface $storeResolver
-     * @param \Buzzi\Publish\Helper\Customer|null $customerHelper
+     * @param \Buzzi\Publish\Helper\ExceptsMarketing|null $exceptsMarketingHelper
      */
     public function __construct(
         \Buzzi\Publish\Model\Config\Events $configEvents,
         \Buzzi\Publish\Api\QueueInterface $queue,
         \Buzzi\PublishCustomerRegistration\Model\DataBuilder $dataBuilder,
         \Magento\Store\Api\StoreResolverInterface $storeResolver,
-        \Buzzi\Publish\Helper\Customer $customerHelper = null
+        \Buzzi\Publish\Helper\ExceptsMarketing $exceptsMarketingHelper = null
     ) {
         $this->configEvents = $configEvents;
         $this->queue = $queue;
         $this->dataBuilder = $dataBuilder;
         $this->storeResolver = $storeResolver;
-        $this->customerHelper = $customerHelper ?: ObjectManager::getInstance()->get(\Buzzi\Publish\Helper\Customer::class);
+        $this->exceptsMarketingHelper = $exceptsMarketingHelper ?: ObjectManager::getInstance()->get(\Buzzi\Publish\Helper\ExceptsMarketing::class);
     }
 
     /**
@@ -67,7 +67,7 @@ class RegisterSuccess implements \Magento\Framework\Event\ObserverInterface
         $storeId = $this->storeResolver->getCurrentStoreId();
 
         if (!$this->configEvents->isEventEnabled(DataBuilder::EVENT_TYPE, $storeId)
-            || !$this->customerHelper->isExceptsMarketing($customer)
+            || !$this->exceptsMarketingHelper->isExcepts(DataBuilder::EVENT_TYPE, $storeId, $customer)
         ) {
             return;
         }
